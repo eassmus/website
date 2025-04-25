@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Sidebar from '../components/Sidebar.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import katex from '../../node_modules/katex/dist/katex.min.css';
+
+type Props = CollectionEntry<'blog'>['data'];
+
+const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+---
+
+<html lang="en">
+	<head>
+    <BaseHead title={title} description={description} />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.css" integrity="sha384-o3WH+1yEhq+grOgz1BVYTZPyTlMXrDxnjN1By9/ba94JqJhva6wFm2Hb+URQX53v" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.js" integrity="sha384-C5yZTsgLOfuizO9kb+hrB8uSBwwvZ4yenKWU0KmWl+7bkL6Tph/KbcOa3S4zdoRE" crossorigin="anonymous"></script>
+	</head>
+	<body class="flex min-h-screen w-full flex-col list-none">
+    <div class = "grow md:flex"> 
+      <Sidebar />
+      <div class="w-full md:w-3/4 md:max-w-4xl pl-8 pt-8">
+        <article>
+          <h1 class="font-bolder">{title}</h1>
+          <FormattedDate date={pubDate} />
+          {
+            updatedDate && (
+              <div class="last-updated-on">
+                Last updated on <FormattedDate date={updatedDate} />
+              </div>
+            )
+          }
+          <hr />
+          <slot />
+        </article>
+        <Footer />
+      </div>
+    </div>
+	</body>
+</html>
