@@ -1,0 +1,117 @@
+---
+title: "Manually Dropping Recursively Defined Pointer Unions [Rust]"
+description: ""
+pubDate: "May 16 2025"
+uploadDate: "May 16 2025"
+heroImage: "union-image.png"
+---
+
+Over the past week I've been writing a byte code vm in Rust for a custom Haskell *esque* language, called **[Breakout](https://github.com/eassmus/Breakout-Byte-Code-Interpreter/tree/master)**. I've been using *Crafting Interpreters* by Robert Nystrom as a guide. The book uses a "Value" struct, including an enum to store type info and a union of values e.g. (boolean, double, etc.) However Breakout is statically typed, so there is really no need to waste memory storing type info. Here is what my "Value" *struct* looks like:
+
+<br/>
+```rust
+union Value {
+    f: OrderedFloat<f64>,
+    i: i64,
+    b: bool,
+    a: ManuallyDrop<ThinBox<Vec<Value>>>,
+    s: ManuallyDrop<ThinBox<String>>, 
+}
+```
+<br/>
+
+What's notable here is that we have to recursively define arrays. Each "array" value is a ```ThinBox``` unique pointer. This is like a normal fat pointer, (storing the values size as well as a pointer to it), but the size is also stored on the heap. This way we can keep unions size to only 8 bytes (the size of a pointer).
+
+<br/>
+
+Also note that we have to wrap our ```ThinBox``` in a ```ManuallyDrop```. This is a a zero-size wrapper that tells the compiler we have to manually deal with dropping the value inside. The Rust compiler cannot clean up the heap memory because we are using a union, and the compiler has no idea when this type will actually be a ```ThinBox```. This will be the source of the issues to come. 
+
+<br/>
+
+Fortunately since Breakout is strongly typed, at runtime we know what values need to be manually dropped, and can do so with ease. This is the case for the string variant of ```Value```. Simply run: 
+
+<br/>
+
+```rust 
+unsafe { ManuallyDrop::drop(value.s) }
+```
+
+<br/>
+
+However things don't go as well for our recursively defined array variant. Consider the following simpler example without a vector:
+<br/>
+
+```rust
+union MyUnion {
+    foo: ManuallyDrop<ThinBox<MyUnion>>,
+    bar: i64,
+}
+
+fn main() {
+    let x = MyUnion { bar: 42 };
+    let y = MyUnion {
+        foo: ManuallyDrop::new(ThinBox::new(x)),
+    };
+    let mut z = MyUnion {
+        foo: ManuallyDrop::new(ThinBox::new(y)),
+    };
+
+    println!("{:?}", z);
+}
+
+```
+<br/>
+
+We can put the resulting executable through valgrind to find that we are leaking 16 bytes:
+
+<br/>
+```
+LEAK SUMMARY:
+   definitely lost: 8 bytes in 1 blocks
+   indirectly lost: 8 bytes in 1 blocks
+     possibly lost: 0 bytes in 0 blocks
+   still reachable: 0 bytes in 0 blocks
+        suppressed: 0 bytes in 0 blocks
+```
+<br/>
+
+These bytes are ```x``` and ```y``` which are stored on the heap. Even if we add a 
+<br/>
+```rust 
+unsafe { ManuallyDrop::drop(&mut z.foo) };
+``` 
+<br/>
+we still get:
+<br/>
+
+```
+LEAK SUMMARY:
+    definitely lost: 8 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 0 bytes in 0 blocks
+         suppressed: 0 bytes in 0 blocks
+```
+<br/>
+
+We are now dropping the value of ```y``` but not ```x``` which it points to. To fix this we will have to recursively run drop. 
+<br/>
+
+```rust
+impl MyUnion {
+    fn recursive_drop(&mut self, depth: usize) {
+        if depth != 0 {
+            unsafe {
+                self.foo.recursive_drop(depth - 1);
+                ManuallyDrop::drop(&mut self.foo);
+            }
+        }
+    }
+}
+```
+<br/>
+
+Unfortunately since the ```MyUnion``` does not contain any information about the depth of the recursation we also have to store the depth externally. However, for the byte code vm we already have this information encoded in the type at compile time. We only need to store this value on a stack somewhere at runtime. So in order to save a byte of enum space we are sometimes storing a byte for depth of arrays somewhere else 🫤.
+
+<br/>
+
