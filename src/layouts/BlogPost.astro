@@ -20,9 +20,9 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 	<body class="flex w-full flex-col list-none">
     <div class = "grow md:flex md:h-screen"> 
       <Sidebar />
-      <div class="w-full md:w-3/4 md:max-w-4xl pl-8 pt-8">
+      <div class="w-full md:w-3/4 md:max-w-4xl pl-8 pt-8 pr-8">
         <article>
-          <h1 class="font-bolder">{title}</h1>
+          <h3 class="font-bolder">{title}</h3>
           <FormattedDate date={pubDate} />
           {
             updatedDate && (
@@ -32,10 +32,11 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
             )
           }
           <hr />
+          <br />
           <slot />
+          <Footer />
         </article>
       </div>
     </div>
-    <Footer />
 	</body>
 </html>
