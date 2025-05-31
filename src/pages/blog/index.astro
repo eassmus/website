@@ -24,9 +24,9 @@ const posts = (await getCollection('blog')).sort(
           posts.map((post) => (
             <li>
               <a href={`/blog/${post.id}/`}>
-                <div class = "mb-8"> 
+                <div class = "mb-12"> 
                   <h4 class="font-bolder">{post.data.title}</h4>
-                  <img class= "w-3/4" src={post.data.heroImage} alt="" />
+                  {post.data.heroImage != "" && <img class= "w-3/4" src={post.data.heroImage} alt="" />}
                   <p>
                     <FormattedDate date={post.data.pubDate} />
                   </p>
