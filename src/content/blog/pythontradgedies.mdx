@@ -1,0 +1,65 @@
+---
+title: "A List of Python Tradgedies"
+description: ""
+pubDate: "May 31 2025"
+uploadDate: "May 31 2025"
+heroImage: ""
+---
+
+Python is a language of all time. Despite its longevity, rich ecosystem, and extensive feature list, the language has some tragic quirks that hurt my brain everytime I encounter them. This is a list of some of my favorites that I will continually update.
+
+<br/>
+
+### List * operator used on lists
+
+This operator is a python classic. It is pretty simple, and I would argue even elegant. Simply take the contents of a list and repeat that $$n$$ times.
+
+Consider the following piece of code:
+<br/>
+
+```python
+def print_arr(arr):
+  for sub_arr in arr:
+    print(sub_arr)
+
+nested_arr = [[0] * 4] * 4
+
+print_arr(nested_arr)
+```
+<br/>
+
+As expected our output is a 4x4 matrix of zeros.
+
+<br/>
+
+```python
+[0, 0, 0, 0]
+[0, 0, 0, 0]
+[0, 0, 0, 0]
+[0, 0, 0, 0]
+```
+
+<br/>
+
+Now lets say we edit this array with ```nested_arr[0][0] = 42``` and call ```print_arr``` again. Now we get:
+
+<br/>
+
+```python
+[42, 0, 0, 0]
+[42, 0, 0, 0]
+[42, 0, 0, 0]
+[42, 0, 0, 0]
+```
+<br/>
+
+??????? Witchcraft. It seems that our * operator has repeated the pointer to that list 4 times instead of copying the list. This is gargantuanly unintuitive. Instead we are restricted to the ugly and potentially un*pythonic*
+
+<br/>
+
+```python
+nested_arr = [[0] * 4 for _ in range(4)]
+```
+
+<br/>
+
