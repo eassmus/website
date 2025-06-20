@@ -63,3 +63,35 @@ nested_arr = [[0] * 4 for _ in range(4)]
 
 <br/>
 
+### Function argument defaults
+
+Consider the following:
+
+<br/>
+
+```python
+def func(l=[]):
+  l.append(1)
+  print(l)
+
+func()
+func()
+
+# This prints:
+[1]
+[1, 1]
+```
+<br/>
+
+?????? ```l``` is not being reconstructed when we use the default argument. Again tragic reference wizardry. The only way I know to work around this is the following:
+
+<br/>
+
+```python
+def func(l=None):
+  if l is None:
+    l = []
+  l.append(1)
+  print(l)
+```
+<br/>
