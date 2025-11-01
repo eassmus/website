@@ -1,0 +1,248 @@
+---
+title: "Groking The Determinant"
+description: ""
+pubDate: "Nov 1 2025"
+uploadDate: "Nov 1 2025"
+heroImage: ""
+---
+
+import TikZ from '../../components/Tikz.astro';
+
+grok | Verb
+
+"to understand profoundly and intuitively" - Merriam-Webster
+
+<br/>
+
+$\det$ is a function of all time. However, I think most students using it don't *grok* it, despite their understanding of one of its "less abstract" definitions. In this post I will try to illustrate my journey with this function, and the path I took to *grok* it.
+
+<br/>
+
+In high school, the following formula occasionally showed its face in math competitions or a precalculus class: $\det \begin{bmatrix} a & b \\ c & d \end{bmatrix} = ad - bc$, accompanied by the usual "area" argument as follows:
+
+<br/>
+
+Given a matrix $A \in \R^{2 \times 2}$, we have that $| \det A |$ is the area of the parallelogram created when applying it to $\vec{e}_1$ and $\vec{e}_2$. For example consider the matrix $A = \begin{bmatrix} 3 & 1 \\ 1 & 2 \end{bmatrix}$ with $|\det A| = |3 \cdot 2 - 1 \cdot 1| = 5 $.
+
+<TikZ code={String.raw`
+\begin{tikzpicture}[
+    scale=1.5, % Adjusts the overall size
+    >=stealth  % Nicer arrowheads
+    ]
+
+    % --- Define the matrix components ---
+    % We'll use M = [[3, 1], [1, 2]] for this specific drawing
+    % det(A) = 3*2 - 1*1 = 5
+    \def\a{3}
+    \def\b{1}
+    \def\c{1}
+    \def\d{2}
+    
+    % --- Calculate coordinates for the transformed parallelogram ---
+    \coordinate (v1) at (\a, \c);       % M*i = (a, c)
+    \coordinate (v2) at (\b, \d);       % M*j = (b, d)
+    \coordinate (v1_plus_v2) at (\a+\b, \c+\d); % M*(i+j)
+    
+    % --- Draw grid and axes ---
+    \draw[style=help lines, very thin, opacity=0.6] (-0,-0) grid (5,4);
+    \draw[->, thick] (-0.2,0) -- (5.5,0) node[right] {$x$};
+    \draw[->, thick] (0,-0.2) -- (0,4.5) node[above] {$y$};
+    
+    % --- 1. The "Before" State (Unit Square) ---
+    \fill[blue, opacity=0.1] (0,0) -- (1,0) -- (1,1) -- (0,1) -- cycle;
+    % Draw basis vectors
+    \draw[->, thick, blue] (0,0) -- (1,0) ;
+    \draw[->, thick, blue] (0,0) -- (0,1) ;
+    % Label the area
+    \node[black, font=\Large] at (0.5, 0.5) {1};
+    
+    % --- 2. The "After" State (Parallelogram) ---
+    \fill[red, opacity=0.1] (0,0) -- (v1) -- (v1_plus_v2) -- (v2) -- cycle;
+    % Draw transformed vectors
+    \draw[->, thick, red] (0,0) -- (v1) ;
+    \draw[->, thick, red] (0,0) -- (v2) ;
+
+    % Label the area
+    \node[black, text width=5cm, align=center, font = \Large] at (2, 1.5) 
+        {$\rule[-0.5ex]{0.05em}{2.2ex} \det(A) \rule[-0.5ex]{0.05em}{2.2ex}$};
+    
+\end{tikzpicture}`}
+/>
+
+Of course this definition can be extended to higher dimensions with the mythical, hideously named, and potentially hard to imagine parallelepiped. [I didn't know there was a third e until writing this].
+
+<br/>
+
+Now what happens to our nice looking ad - bc when we go to higher dimensions.
+
+<br/>
+
+$$\det \begin{bmatrix} a & b & c \\ d & e & f \\ g & h & i \end{bmatrix} = a(ei-fh) - b(di-fg) +  c(dh-eg) $$
+
+<br/>
+
+GAH! What murderous manner of mechanism has manifested such a miraculously malicious formula. Well it turns ot that:
+
+<br/>
+
+$$\det \begin{bmatrix} a & b & c \\ d & e & f \\ g & h & i \end{bmatrix} = a \cdot \det \begin{bmatrix} e & f \\ h & i \end{bmatrix} - b \cdot \det \begin{bmatrix} d & f \\ g & i \end{bmatrix} +  c \cdot \begin{bmatrix} d & e \\ g & h \end{bmatrix} $$
+
+<br/>
+
+Who would've guessed? [Certainly not me.] This all leads to the frankly **tragic** recursive definition of the determinant which came in college:
+
+<br/>
+
+$$\det A = \sum_{i=1}^n (-1)^i \det A_{i,j}$$
+
+<br/>
+
+Where $A_{i,j}$ is a minor of the matrix and $1 \leq j \leq n$. [This definition also works iterating on rows the columns.] This definition is insanely useful and helps us do lots of nice things with the list of identities involving $\det$.
+
+<br/>
+
+But can we do better? Yes. Let's start from the beginning. Lets say we want a function that gives us the volume of the space that we get when mapping the box defined by $e_1, \dots, e_n$ through a matrix $A$.
+
+<br/>
+
+What kinds of properties might we want such a function $f$ to have? [We will defined $f$ as a function on $\R^n \times \dots \times \R^n$, where each entry represents a column in $A$] It turns out there are three:
+
+<br/>
+
+<ul>
+ <li> - $f(I) = 1$ </li>
+ <li> - $f$ is *multilinear* </li>
+ <li> - $f$ is *alternating* </li>
+</ul>
+
+<br/>
+
+Clearly we want $f(I) = 1$ as the mapping our box through the identity produces the same unit box.
+
+<br/>
+
+Now what about multilinear. Suppose we have $A = \begin{bmatrix} 3 & 1 \\ 1 & 2 \end{bmatrix}$ as before and $B = \begin{bmatrix} 3 & 3 \\ 1 & 5 \end{bmatrix}$. Now how can we add the areas? Lets go about this geometrically:
+
+<TikZ code={String.raw`
+\begin{tikzpicture}[
+    scale=1.5, % Adjusts the overall size
+    >=stealth  % Nicer arrowheads
+    ]
+
+    % --- Define the matrix components ---
+    % We'll use A = [[3, 1], [1, 2]] for this specific drawing
+    % We'll use B = [[3, 6], [1, 5]] for this specific drawing
+    % det(A) = 3*2 - 1*1 = 5
+    \def\a{3}
+    \def\b{1}
+    \def\c{1}
+    \def\d{2}
+    \def\e{6}
+    \def\f{5}
+    
+    % --- Calculate coordinates for the transformed parallelogram ---
+    \coordinate (v1) at (\a, \c);       % M*i = (a, c)
+    \coordinate (v2) at (\b, \d);       % M*j = (b, d)
+    \coordinate (v1_plus_v2) at (\a+\b, \c+\d); % M*(i+j)
+
+    \coordinate (w1) at (\a, \c);       % M*i = (a, e)
+    \coordinate (w2) at (\e, \f);       % M*j = (c, f)
+    \coordinate (w1_plus_w2) at (\a+\e, \c+\f); % M*(i+j)
+    
+    % --- Draw grid and axes ---
+    \draw[style=help lines, very thin, opacity=0.6] (-0,-0) grid (11,9);
+    \draw[->, thick] (-0.2,0) -- (11.5,0) node[right] {$x$};
+    \draw[->, thick] (0,-0.2) -- (0,9.5) node[above] {$y$};
+    
+    \fill[red, opacity=0.1] (0,0) -- (v1) -- (v1_plus_v2) -- (v2) -- cycle;
+    % Draw transformed vectors
+    \draw[->, thick, red] (0,0) -- (v1) ;
+    \draw[->, thick, red] (0,0) -- (v2) ;
+
+    % Label the area
+    \node[red, text width=5cm, align=center, font = \Large] at (2, 1.5) 
+        {$\rule[-0.5ex]{0.05em}{2.2ex} f(A) \rule[-0.5ex]{0.05em}{2.2ex}$};
+
+    \fill[blue, opacity=0.1] (0,0) -- (w1) -- (w1_plus_w2) -- (w2) -- cycle;
+    % Draw transformed vectors
+    \draw[->, thick, blue] (0,0) -- (w1) ;
+    \draw[->, thick, blue] (0,0) -- (w2) ;
+
+    % Label the area
+    \node[blue, text width=5cm, align=center, font = \Large] at (3, 2.9) 
+        {$\rule[-0.5ex]{0.05em}{2.2ex} f(B) \rule[-0.5ex]{0.05em}{2.2ex}$};
+    
+\end{tikzpicture}`}
+/>
+
+<TikZ code={String.raw`
+\begin{tikzpicture}[
+    scale=1.5, % Adjusts the overall size
+    >=stealth  % Nicer arrowheads
+    ]
+
+    % --- Define the matrix components ---
+    % We'll use A = [[3, 1], [1, 2]] for this specific drawing
+    % We'll use B = [[3, 6], [1, 5]] for this specific drawing
+    % det(A) = 3*2 - 1*1 = 5
+    \def\a{3}
+    \def\b{1}
+    \def\c{1}
+    \def\d{2}
+    \def\e{6}
+    \def\f{5}
+    
+    % --- Calculate coordinates for the transformed parallelogram ---
+    \coordinate (v1) at (\a, \c);       % M*i = (a, c)
+    \coordinate (v2) at (\b, \d);       % M*j = (b, d)
+    \coordinate (v1_plus_v2) at (\a+\b, \c+\d); % M*(i+j)
+
+    \coordinate (w1) at (\a, \c);       % M*i = (a, e)
+    \coordinate (w2) at (\e, \f);       % M*j = (c, f)
+    \coordinate (w1_plus_w2) at (\a+\e, \c+\f); % M*(i+j)
+    \coordinate (w2_plus_v2) at (\e+\b, \f+\d); % M*(i+j)
+    \coordinate (all) at (\e+\b+\a, \c+\f+\d); % M*(i+j)
+    
+    % --- Draw grid and axes ---
+    \draw[style=help lines, very thin, opacity=0.6] (-0,-0) grid (11,9);
+    \draw[->, thick] (-0.2,0) -- (11.5,0) node[right] {$x$};
+    \draw[->, thick] (0,-0.2) -- (0,9.5) node[above] {$y$};
+    
+    \fill[red, opacity=0.1] (0,0) -- (v1) -- (v1_plus_v2) -- (v2) -- cycle;
+    % Draw transformed vectors
+    \draw[->, thick, red] (0,0) -- (v1) ;
+    \draw[->, thick, red] (0,0) -- (v2) ;
+
+    % Label the area
+
+    \fill[blue, opacity=0.1] (v2) -- (v1_plus_v2) -- (all) -- (w2_plus_v2) -- cycle;
+    % Draw transformed vectors
+    \draw[->, thick, blue] (v2) -- (w2_plus_v2) ;
+    \draw[->, thick, blue] (v2) -- (v1_plus_v2) ;
+
+    % Label the area
+    
+
+    \fill[green, opacity=0.1] (0,0) -- (v1) -- (all) -- (w2_plus_v2) -- cycle;
+    % Draw transformed vectors
+    \draw[->, thick, olive] (0,0) -- (v1) ;
+    \draw[->, thick, olive] (0,0) -- (w2_plus_v2) ;
+
+    % Label the area
+    \node[red, text width=5cm, align=center, font = \Large] at (2, 1.5) 
+        {$\rule[-0.5ex]{0.05em}{2.2ex} f(A) \rule[-0.5ex]{0.05em}{2.2ex}$};
+    \node[blue, text width=5cm, align=center, font = \Large] at (3, 2.9) 
+        {$\rule[-0.5ex]{0.05em}{2.2ex} f(B) \rule[-0.5ex]{0.05em}{2.2ex}$};
+    \node[olive, text width=5cm, align=center, font = \Large] at (5, 3.9) 
+        {$\rule[-0.5ex]{0.05em}{2.2ex} f(C) \rule[-0.5ex]{0.05em}{2.2ex}$};
+
+\end{tikzpicture}`}
+/>
+
+With $C = \begin{bmatrix} 3 & 7 \\ 1 & 6 \end{bmatrix}$. Note here second column of $C$ is the sum of the second columns of $A$ and $B$, and the first column is their first column. I claim that $f(A) + f(B) = f(C)$. Hopefully you can see this by sliding the shape formed by the blue and red bits into place.
+
+Thus for $f$ we want that $f(\vec{v}_1, \dots, \vec{a}, \dots, \vec{v}_n) + f(\vec{v}_1, \dots, \vec{b}, \dots, \vec{v}_n) = f(\vec{v_1}, \dots, \vec{a} + \vec{b}, \dots, \vec{v}_n)$. A similar argument exists for the scalar multiple property of being multilinear but I will leave that as an exercise for the reader [There is already enough tikzpicture in this post].
+
+<br/>
+
+TO BE CONTINUED
