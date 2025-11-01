@@ -245,4 +245,152 @@ Thus for $f$ we want that $f(\vec{v}_1, \dots, \vec{a}, \dots, \vec{v}_n) + f(\v
 
 <br/>
 
+Now what about alternating? This induces the discussion of signed volume. Which initially seems a little unclear if we are looking for a function that gets the *area* of some space. But lets suspend our disbelief for a little bit and assume we want signed volume. For example if we transformed the unit square across the $x$-axis it is a fair assumption to want its volume to negative.
+
+<br/>
+
+Lets consider this question: What happens if we permute two vectors in the input to $f$? We can think of this as permuting the basis vectors of the original space. Consider the following geometric argument of permuting the $x$ and $y$ axis.
+
+<br/>
+
+<TikZ code={String.raw`
+\begin{tikzpicture}[
+    scale=1.1, % Adjusts the overall size
+    >=stealth  % Nicer arrowheads
+    ]
+
+    % --- Define the matrix components ---
+    % We'll use A = [[3, 1], [1, 2]] for this specific drawing
+    % det(A) = 3*2 - 1*1 = 5
+    \def\a{3}
+    \def\b{1}
+    \def\c{1}
+    \def\d{2}
+    
+    % --- Calculate coordinates for the transformed parallelogram ---
+    \coordinate (v1) at (\a, \c);       % M*i = (a, c)
+    \coordinate (v2) at (\b, \d);       % M*j = (b, d)
+    \coordinate (v1_plus_v2) at (\a+\b, \c+\d); % M*(i+j)
+
+    
+    % --- Draw grid and axes ---
+    \draw[style=help lines, very thin, opacity=0.6] (-0,-0) grid (4,4);
+    \draw[->, thick] (-0.2,0) -- (5,0) node[right] {$x$};
+    \draw[->, thick] (0,-0.2) -- (0,5) node[above] {$y$};
+    
+    \fill[red, opacity=0.1] (0,0) -- (v1) -- (v1_plus_v2) -- (v2) -- cycle;
+    % Draw transformed vectors
+    \draw[->, thick, red] (0,0) -- (v1) ;
+    \draw[->, thick, red] (0,0) -- (v2) ;
+
+\end{tikzpicture}`}
+/>
+
+<TikZ code={String.raw`
+\begin{tikzpicture}[
+    scale=1.1, % Adjusts the overall size
+    >=stealth  % Nicer arrowheads
+    ]
+
+    % --- Define the matrix components ---
+    % We'll use A = [[3, 1], [1, 2]] for this specific drawing
+    % det(A) = 3*2 - 1*1 = 5
+    \def\a{11/5}
+    \def\b{7/5}
+    \def\c{9/5}
+    \def\d{8/5}
+    
+    % --- Calculate coordinates for the transformed parallelogram ---
+    \coordinate (v1) at (\a, \c);       % M*i = (a, c)
+    \coordinate (v2) at (\b, \d);       % M*j = (b, d)
+    \coordinate (v1_plus_v2) at (\a+\b, \c+\d); % M*(i+j)
+
+    
+    % --- Draw grid and axes ---
+    \draw[->, thick] (-0.3,-0.2) -- (3,2) node[right] {$x$};
+    \draw[->, thick] (-0.2,-0.3) -- (2,3) node[above] {$y$};
+    
+    \fill[red, opacity=0.1] (0,0) -- (v1) -- (v1_plus_v2) -- (v2) -- cycle;
+    % Draw transformed vectors
+    \draw[->, thick, red] (0,0) -- (v1) ;
+    \draw[->, thick, red] (0,0) -- (v2) ;
+
+\end{tikzpicture}`}
+/>
+
+<TikZ code={String.raw`
+\begin{tikzpicture}[
+    scale=1.1, % Adjusts the overall size
+    >=stealth  % Nicer arrowheads
+    ]
+
+    % --- Define the matrix components ---
+    % We'll use A = [[3, 1], [1, 2]] for this specific drawing
+    % det(A) = 3*2 - 1*1 = 5
+    \def\a{9/5}
+    \def\b{8/5}
+    \def\c{11/5}
+    \def\d{7/5}
+    
+    % --- Calculate coordinates for the transformed parallelogram ---
+    \coordinate (v1) at (\a, \c);       % M*i = (a, c)
+    \coordinate (v2) at (\b, \d);       % M*j = (b, d)
+    \coordinate (v1_plus_v2) at (\a+\b, \c+\d); % M*(i+j)
+
+    
+    % --- Draw grid and axes ---
+    \draw[->, thick] (-0.3,-0.2) -- (3,2) node[right] {$y$};
+    \draw[->, thick] (-0.2,-0.3) -- (2,3) node[above] {$x$};
+    
+    \fill[red, opacity=0.1] (0,0) -- (v1) -- (v1_plus_v2) -- (v2) -- cycle;
+    % Draw transformed vectors
+    \draw[->, thick, red] (0,0) -- (v1) ;
+    \draw[->, thick, red] (0,0) -- (v2) ;
+
+\end{tikzpicture}`}
+/>
+
+<TikZ code={String.raw`
+\begin{tikzpicture}[
+    scale=1.1, % Adjusts the overall size
+    >=stealth  % Nicer arrowheads
+    ]
+
+    % --- Define the matrix components ---
+    % We'll use A = [[3, 1], [1, 2]] for this specific drawing
+    % det(A) = 3*2 - 1*1 = 5
+    \def\a{1}
+    \def\b{2}
+    \def\c{3}
+    \def\d{1}
+    
+    % --- Calculate coordinates for the transformed parallelogram ---
+    \coordinate (v1) at (\a, \c);       % M*i = (a, c)
+    \coordinate (v2) at (\b, \d);       % M*j = (b, d)
+    \coordinate (v1_plus_v2) at (\a+\b, \c+\d); % M*(i+j)
+
+    
+    % --- Draw grid and axes ---
+    \draw[style=help lines, very thin, opacity=0.6] (-0,-0) grid (4,4);
+    \draw[->, thick] (-0.2,0) -- (5,0) node[right] {$y$};
+    \draw[->, thick] (0,-0.2) -- (0,5) node[above] {$x$};
+    
+    \fill[red, opacity=0.1] (0,0) -- (v1) -- (v1_plus_v2) -- (v2) -- cycle;
+    % Draw transformed vectors
+    \draw[->, thick, red] (0,0) -- (v1) ;
+    \draw[->, thick, red] (0,0) -- (v2) ;
+
+\end{tikzpicture}`}
+/>
+
+<br/>
+
+By flipping these two axis we have essentially inverted the same across the line of $y = x$! Thus we will say that this inversion negates the volume. So we conclude that $f$ should be alternating.
+
+<br/>
+
+Now lets examine the class of function that $f$ is. To recap $f$ is an $n$ alternating multilinear map. You can verify for yourself that this is a vector space. So a natural question arises. What is the dimension of this vector space?
+
+<br/>
+
 TO BE CONTINUED
