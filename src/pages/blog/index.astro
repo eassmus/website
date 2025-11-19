@@ -19,7 +19,7 @@ const posts = (await getCollection('blog')).sort(
 	<body class="flex w-full flex-col">
     <div class = "grow md:flex h-screen">
       <Sidebar />
-      <ul class="w-full md:w-3/4 md:max-w-2xl pl-6 pt-6 pr-6">
+      <ul class="w-full md:w-3/4 md:max-w-2xl pl-6 pt-6 pr-6 list-none">
         {
           posts.map((post) => (
             <li>
