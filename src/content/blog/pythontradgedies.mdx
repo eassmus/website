@@ -95,3 +95,22 @@ def func(l=None):
   print(l)
 ```
 <br/>
+
+### __dict__
+
+```python
+class A:
+  def __init__(self):
+    self.a = 40
+
+a = A()
+a.__dict__['b'] = a.a
+for k in a.__dict__:
+  a.__dict__[k] += 2
+print(a.b)
+```
+
+<br/>
+
+This prints ```42```. This is emacs level of self-editing. This can pretty useful, but it is so **unserious**. 
+
