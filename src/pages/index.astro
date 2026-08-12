@@ -20,6 +20,22 @@ import Layout from '../layouts/Page.astro';
   <p>
   Take a look at my <u><a href="/blog">blog</a></u> where I write about math/cs things that interest me. Also check out my <u><a href="/techstack">tech stack</a></u> including my config/dotfiles for my NixOS/Hyprland setup.
   </p>
-  <br />
+  <br/>
+  <p>
+  Feel free to reach out to me at <b><u><a id="email" class="obf" data-e="ZWFzc211c0B1bWljaC5lZHU=">ude [tod] hcimu [ta] sumssae</a></u></b>!
+  </p>
+  <style>
+    .obf {
+      unicode-bidi: bidi-override;
+      direction: rtl;
+    }
+  </style>
+  <script>
+    const el = document.getElementById('email');
+    if (el instanceof HTMLAnchorElement) {
+      el.href = `mailto:${atob(el.dataset.e ?? '')}`;
+    }
+  </script>
+  <br/>
   <PublicationsList />
 </Layout>
