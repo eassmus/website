@@ -7,7 +7,7 @@
 @import "tailwindcss";
 
 @layer base {
-  ul {
+  ul, ol {
     list-style: revert;
     list-style-position: inside;
   }

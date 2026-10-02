@@ -16,22 +16,17 @@ const { title , description } = Astro.props;
 	<head>
 		<BaseHead title={title} description={description} />
 	</head>
-	<body class="flex w-full flex-col">
+	<body class="flex min-h-screen w-full flex-col">
 
-    <div class = "grow md:flex h-screen">
+    <div class = "grow md:flex">
       <Sidebar />
       <div class="w-full md:w-3/4 md:max-w-2xl pl-6 pt-6 pr-6">
         <h2 class="font-bolder">{title}</h2>
         <hr class = "mt-2 mb-4"/>
         <slot />
-        <div class = "md:invisible"> 
-          <Footer />
-        </div>
       </div>
     </div>
-    <div class = "max-md:invisible"> 
-      <Footer />
-    </div>
+    <Footer />
     <Analytics />
 	</body>
 </html>
