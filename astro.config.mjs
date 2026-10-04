@@ -9,7 +9,8 @@ import rehypeKatex from 'rehype-katex'
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://example.com',
-	integrations: [mdx(), sitemap()],  vite: {
+	integrations: [mdx(), sitemap()],
+  vite: {
     plugins: [tailwindcss()],
   },
   markdown: {
