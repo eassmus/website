@@ -10,7 +10,7 @@ import rehypeKatex from 'rehype-katex'
 export default defineConfig({
 	site: 'https://example.com',
 	integrations: [mdx(), sitemap()],
-	prefetch: { prefetchAll: true, defaultStrategy: 'viewport' },
+	prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   vite: {
     plugins: [tailwindcss()],
   },
