@@ -1,11 +1,13 @@
 ---
 import SidebarLink from './SidebarLink.astro';
 import { SITE_TITLE } from '../consts';
+import { Image } from 'astro:assets';
+import photo from '../assets/photo.jpg';
 ---
 
 <div class = "p-6 md:p-4 md:block md:w-64 md:sticky md:top-0 sidebar">
   <div>
-    <a href="/"><img class = "mb-4 max-md:w-1/3" src = "/photo.jpg"></a>
+    <a href="/"><Image class = "mb-4 max-md:w-1/3" src = {photo} alt = "Evan Assmus" loading = "eager"></a>
     <a href="/" class = "text-3xl">{SITE_TITLE}</a>
   </div>
   <hr class = "mt-3"/>
