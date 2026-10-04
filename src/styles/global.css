@@ -11,6 +11,9 @@
     list-style: revert;
     list-style-position: inside;
   }
+  ul ul{
+    padding-left: 20px;
+  }
 }
 :root {
 	--accent: #82aee8;
